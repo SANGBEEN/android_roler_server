@@ -1,6 +1,5 @@
 var express = require('express');
 var mysql = require('mysql');
-var mysql = require('mysql');
 var router = express.Router();
 
 
@@ -37,13 +36,14 @@ router.get('/duplitcation', function(req, res, next){
     }
   });
 });
-
 router.post('/in', function(req, res, next){
   connection.query('select * from user where email = ? and password = ?', [req.body.email, req.body.password], function(error, cursor){
+    console.log()
     if (error){
       res.status(500).json({error : error});
     }
     else {
+      console.log(cursor.length);
       if (cursor.length > 0)
         res.status(200).json({result : true});
       else{
