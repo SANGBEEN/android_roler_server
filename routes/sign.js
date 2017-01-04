@@ -45,7 +45,7 @@ router.post('/in', function(req, res, next){
     else {
       console.log(cursor.length);
       if (cursor.length > 0)
-        res.status(200).json({result : true,name : req.body.name, email :req.body.email});
+        res.status(200).json({result : true, name : cursor[0].name, email :req.body.email});
       else{
         res.status(200).json({result : false});
 
