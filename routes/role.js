@@ -2,13 +2,10 @@ var express = require('express');
 var mysql = require('mysql');
 var multer = require('multer');
 var router   = express.Router();
-
-var connection = mysql.createConnection({
-
-});
+var db = require('./database');
 
 router.post('/create', function(req, res, next) {
-  connection.query('insert into role(rolePrimary, roleName, roleContent, user_id) values(?,?,?,?);', [req.body.rolePrimary, req.body.roleName, req.body.roleContent, req.body.user_id], function(error, cursor){
+  db.query('insert into role(rolePrimary, roleName, roleContent, user_id) values(?,?,?,?);', [req.body.rolePrimary, req.body.roleName, req.body.roleContent, req.body.user_id], function(error, cursor){
     if (error){
       res.status(500).json({result : error});
     }
@@ -19,7 +16,7 @@ router.post('/create', function(req, res, next) {
 });
 
 router.delete('/delete', function(req, res, next) {
-  connection.query('delete from role where id = ?;', [req.query.role_id], function(error, cursor){
+  db.query('delete from role where id = ?;', [req.query.role_id], function(error, cursor){
     if (error){
       res.status(500).json({result : error});
     }
@@ -30,7 +27,7 @@ router.delete('/delete', function(req, res, next) {
 });
 
 router.put('/update', function(req, res, next) {
-  connection.query('update role set rolePrimary = ?, roleName = ?, roleContent = ? where id = ?;', [req.body.rolePrimary, req.body.roleName, req.body.roleContent, req.body.role_id], function(error, cursor){
+  db.query('update role set rolePrimary = ?, roleName = ?, roleContent = ? where id = ?;', [req.body.rolePrimary, req.body.roleName, req.body.roleContent, req.body.role_id], function(error, cursor){
     if (error){
       res.status(500).json({result : error});
     }
@@ -41,14 +38,23 @@ router.put('/update', function(req, res, next) {
 });
 
 router.get('/read', function(req, res, next) {
-  console.log(req.query.user_id);
-  connection.query('select * from role where and user_id = ?;', [req.query.user_id], function(error, cursor){
+  //console.log(req.query.user_id);
+  db.query('select * from role where user_id = ?', [req.query.user_id], function(error, cursor){
+    console.log(req.query.user_id);
+    var result=[];
     if (error){
       res.status(500).json({result : error});
     }
     else {
-      if (cursor.length > 0)
-        res.status(200).json(cursor);
+      if (cursor.length > 0){
+        for(var i=0;i<cursor.length;i++){
+          console.log(cursor[i].role_id);
+          result.push({role_id:cursor[i].role_id, rolePrimary:cursor[i].rolePrimary, roleName:cursor[i].roleName, roleContent:cursor[i].roleContent, user_id:cursor[i].user_id});
+          console.log(result[i].role_id);
+        }
+        res.status(200).json({params:result});
+      }
+
       else
         res.status(200).json({result : '정보가 없습니다.'})
     }
