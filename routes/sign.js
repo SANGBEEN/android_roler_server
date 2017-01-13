@@ -1,18 +1,19 @@
 var express = require('express');
-var mysql = require('mysql');
+//var mysql = require('mysql');
+var db = require('./database');
 var router = express.Router();
 
-
+/*
 var connection = mysql.createConnection({
   host     : 'roler.cdqui1vgbssg.ap-northeast-2.rds.amazonaws.com',
   user     : 'hyunsung',
   password : 'nanamare',
   database : 'Roler'
 });
-
+*/
 
 router.post('/up', function(req, res, next) {
-  connection.query('insert into user(name, email, password) values(?,?,?);', [req.body.name, req.body.email, req.body.password], function(error, cursor){
+  db.query('insert into user(name, email, password) values(?,?,?);', [req.body.name, req.body.email, req.body.password], function(error, cursor){
     if (error){
       res.status(500).json({result : error});
     }
@@ -23,7 +24,7 @@ router.post('/up', function(req, res, next) {
 });
 
 router.get('/duplitcation', function(req, res, next){
-  connection.query('select * from user where email = ?', [req.query.email], function(error, cursor){
+  db.query('select * from user where email = ?', [req.query.email], function(error, cursor){
     console.log()
     if (error){
       res.status(500).json({error : error});
@@ -37,7 +38,7 @@ router.get('/duplitcation', function(req, res, next){
   });
 });
 router.post('/in', function(req, res, next){
-  connection.query('select * from user where email = ? and password = ?', [req.body.email, req.body.password], function(error, cursor){
+  db.query('select * from user where email = ? and password = ?', [req.body.email, req.body.password], function(error, cursor){
     console.log()
     if (error){
       res.status(500).json({error : error});
