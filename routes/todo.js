@@ -2,12 +2,10 @@ var express = require('express');
 var mysql = require('mysql');
 var multer = require('multer');
 var router = express.Router();
-
-var connection = mysql.createConnection({
-});
+var db = require('./database');
 
 router.post('/create', function(req, res, next) {
-  connection.query('insert into todo(content, todoOrder, todoDate, role_id, user_id) values(?,?,?,?,?);', [req.body.content, req.body.todoOrder, req.body.todoDate, req.body.role_id, req.body.user_id], function(error, cursor){
+  db.query('insert into todo(content, todoOrder, todoDate, role_id, user_id) values(?,?,?,?,?);', [req.body.content, req.body.todoOrder, req.body.todoDate, req.body.role_id, req.body.user_id], function(error, cursor){
     if (error){
       res.status(500).json({result : error});
     }
@@ -19,7 +17,7 @@ router.post('/create', function(req, res, next) {
 });
 
 router.delete('/delete', function(req, res, next) {
-  connection.query('delete from todo where id = ?;', [req.query.role_id], function(error, cursor){
+  db.query('delete from todo where id = ?;', [req.query.role_id], function(error, cursor){
     if (error){
       res.status(500).json({result : error});
     }
@@ -30,7 +28,7 @@ router.delete('/delete', function(req, res, next) {
 });
 
 router.put('/update', function(req, res, next) {
-  connection.query('update todo set content = ?, todoOrder = ?, isDone = ?, role_id = ? where id = ?;', [req.body.todoContent, req.body.todoOrder, req.body.isDone, req.body.role_id, req.body.todo_id], function(error, cursor){
+  db.query('update todo set content = ?, todoOrder = ?, isDone = ?, role_id = ? where id = ?;', [req.body.todoContent, req.body.todoOrder, req.body.isDone, req.body.role_id, req.body.todo_id], function(error, cursor){
     if (error){
       res.status(500).json({result : error});
     }
@@ -41,13 +39,18 @@ router.put('/update', function(req, res, next) {
 });
 
 router.get('/read', function(req, res, next) {
-  connection.query('select * from todo where todoDate = ? and user_id = ?;', [req.query.todoDate, req.query.user_id], function(error, cursor){
+  db.query('select * from todo where todoDate = ? and user_id = ? and role_id=?;', [req.query.todoDate, req.query.user_id, req.query.role_id], function(error, cursor){
+    var result=[];
     if (error){
       res.status(500).json({result : error});
     }
     else {
-      if (cursor.length > 0)
-        res.status(200).json(cursor);
+      if (cursor.length > 0){
+        for(var i=0;i<cursor.length;i++){
+          result.push({content:cursor[i].content, isDone:cursor[i].isDone});
+        }
+        res.status(200).json({result: true, params:result});
+      }
       else
         res.status(200).json({result : '정보가 없습니다.'})
     }

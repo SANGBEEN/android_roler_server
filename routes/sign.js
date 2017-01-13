@@ -13,12 +13,12 @@ var connection = mysql.createConnection({
 */
 
 router.post('/up', function(req, res, next) {
-  db.query('insert into user(name, email, password) values(?,?,?);', [req.body.name, req.body.email, req.body.password], function(error, cursor){
+  db.query('insert into user(name, email, password) values(?,?,?)', [req.body.name, req.body.email, req.body.password], function(error, cursor){
     if (error){
       res.status(500).json({result : error});
     }
     else {
-      res.status(200).json({email : req.body.name});
+      res.status(200).json({result:true, id : cursor.insertId, name : req.body.name});
     }
   });
 });
@@ -44,7 +44,6 @@ router.post('/in', function(req, res, next){
       res.status(500).json({error : error});
     }
     else {
-      console.log(cursor.length);
       if (cursor.length > 0)
         res.status(200).json({result : true, name : cursor[0].name, email :req.body.email, id: cursor[0].id});
       else{

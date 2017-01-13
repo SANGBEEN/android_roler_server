@@ -40,7 +40,7 @@ router.put('/update', function(req, res, next) {
 router.get('/read', function(req, res, next) {
   //console.log(req.query.user_id);
   db.query('select * from role where user_id = ?', [req.query.user_id], function(error, cursor){
-    console.log(req.query.user_id);
+    //console.log(req.query.user_id);
     var result=[];
     if (error){
       res.status(500).json({result : error});
@@ -48,11 +48,9 @@ router.get('/read', function(req, res, next) {
     else {
       if (cursor.length > 0){
         for(var i=0;i<cursor.length;i++){
-          console.log(cursor[i].role_id);
           result.push({role_id:cursor[i].role_id, rolePrimary:cursor[i].rolePrimary, roleName:cursor[i].roleName, roleContent:cursor[i].roleContent, user_id:cursor[i].user_id});
-          console.log(result[i].role_id);
         }
-        res.status(200).json({params:result});
+        res.status(200).json({result:true, params:result});
       }
 
       else
