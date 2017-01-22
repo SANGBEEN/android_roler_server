@@ -1,16 +1,28 @@
 var express = require('express');
 var db = require('./database');
 var multer = require('multer');
-var fs    = require('fs');
+var fs    = require('fs-extra');
 var path = require('path');
 var router = express.Router();
+/*
 var upload = multer({
   dest: path.join(__dirname, '../upload')
+});*/
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    let email = req.params.email;
+    let filepath = './upload/'+email;
+    fs.mkdirsSync(filepath);
+    cb(null, filepath)
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname + '-' + Date.now())
+  }
 });
 
-router.post('/upload',upload.single('myfile'), function(req,res){
+var upload = multer({ storage: storage })
+router.post('/upload/:email',upload.single('myfile'), function(req,res){
   if(req.file){
-    console.log(req.body); //form fields
     console.log(req.file); //form files
     res.status(204).end();
   }else{

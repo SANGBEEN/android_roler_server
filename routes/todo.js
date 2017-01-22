@@ -10,7 +10,7 @@ router.post('/create', function(req, res, next) {
       res.status(500).json({result : error});
     }
     else {
-      res.status(200).json({result : true});
+      res.status(200).json({result : true, id:cursor.insertId });
     }
   });
 
@@ -22,7 +22,7 @@ router.delete('/delete', function(req, res, next) {
       res.status(500).json({result : error});
     }
     else {
-      res.status(200).end();
+      res.status(200).json({result : true});
     }
   });
 });
@@ -47,11 +47,11 @@ router.get('/read', function(req, res, next) {
     else {
       if (cursor.length > 0){
         for(var i=0;i<cursor.length;i++){
-          result.push({content:cursor[i].content, isDone:cursor[i].isDone, todoOrder: cursor[i].todoOrder});
+          result.push({id: cursor[i].id, content:cursor[i].content, isDone:cursor[i].isDone, todoOrder: cursor[i].todoOrder});
         }
 
         result.sort(function (a, b) {
-          return a.todoOrder < b.todoOrder ? -1 : a.todoOrder > b.todoOrder ? 1 : 0;
+          return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
         });
 
         res.status(200).json({result: true, params:result});
