@@ -10,7 +10,7 @@ router.post('/create', function(req, res, next) {
       res.status(500).json({result : error});
     }
     else {
-      res.status(200).end();
+      res.status(200).json({result : true});
     }
   });
 
@@ -39,7 +39,7 @@ router.put('/update', function(req, res, next) {
 });
 
 router.get('/read', function(req, res, next) {
-  db.query('select * from todo where todoDate = ? and user_id = ? and role_id=?;', [req.query.todoDate, req.query.user_id, req.query.role_id], function(error, cursor){
+  db.query('select * from todo where user_id = ? and role_id=?;', [req.query.user_id, req.query.role_id], function(error, cursor){
     var result=[];
     if (error){
       res.status(500).json({result : error});
@@ -47,8 +47,13 @@ router.get('/read', function(req, res, next) {
     else {
       if (cursor.length > 0){
         for(var i=0;i<cursor.length;i++){
-          result.push({content:cursor[i].content, isDone:cursor[i].isDone});
+          result.push({content:cursor[i].content, isDone:cursor[i].isDone, todoOrder: cursor[i].todoOrder});
         }
+
+        result.sort(function (a, b) {
+          return a.todoOrder < b.todoOrder ? -1 : a.todoOrder > b.todoOrder ? 1 : 0;
+        });
+
         res.status(200).json({result: true, params:result});
       }
       else

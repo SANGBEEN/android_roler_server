@@ -1,17 +1,22 @@
 var express = require('express');
-//var mysql = require('mysql');
 var db = require('./database');
+var multer = require('multer');
+var fs    = require('fs');
+var path = require('path');
 var router = express.Router();
-
-/*
-var connection = mysql.createConnection({
-  host     : 'roler.cdqui1vgbssg.ap-northeast-2.rds.amazonaws.com',
-  user     : 'hyunsung',
-  password : 'nanamare',
-  database : 'Roler'
+var upload = multer({
+  dest: path.join(__dirname, '../upload')
 });
-*/
 
+router.post('/upload',upload.single('myfile'), function(req,res){
+  if(req.file){
+    console.log(req.body); //form fields
+    console.log(req.file); //form files
+    res.status(204).end();
+  }else{
+      res.end('Missing file');
+  }
+});
 router.post('/up', function(req, res, next) {
   db.query('insert into user(name, email, password) values(?,?,?)', [req.body.name, req.body.email, req.body.password], function(error, cursor){
     if (error){

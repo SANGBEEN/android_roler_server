@@ -48,7 +48,7 @@ router.get('/read', function(req, res, next) {
     else {
       if (cursor.length > 0){
         for(var i=0;i<cursor.length;i++){
-          result.push({role_id:cursor[i].role_id, rolePrimary:cursor[i].rolePrimary, roleName:cursor[i].roleName, roleContent:cursor[i].roleContent, user_id:cursor[i].user_id});
+          result.push({role_id:cursor[i].id, rolePrimary:cursor[i].rolePrimary, roleName:cursor[i].roleName, roleContent:cursor[i].roleContent, user_id:cursor[i].user_id});
         }
         res.status(200).json({result:true, params:result});
       }
