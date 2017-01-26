@@ -8,6 +8,8 @@ var router = express.Router();
 var upload = multer({
   dest: path.join(__dirname, '../upload')
 });*/
+
+
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
     var email = req.params.email;
@@ -16,15 +18,23 @@ var storage = multer.diskStorage({
     cb(null, filepath)
   },
   filename: function (req, file, cb) {
-    cb(null, file.originalname + '-' + Date.now())
+    cb(null, file.originalname);
   }
 });
-
+//UPDATE user SET picture_id="test1.jpg" where email="kozy@naver.com"
 var upload = multer({ storage: storage })
 router.post('/upload/:email',upload.single('myfile'), function(req,res){
   if(req.file){
-    console.log(req.file); //form files
-    res.status(204).end();
+    db.query('UPDATE user SET picture_id = ? where email= ?',[req.file.originalname, req.params.email],function(error,cursor){
+      if(error){
+        res.status(500).json({result : error});
+      }
+      else{
+        console.log(req.file); //form files
+        res.status(200).json({result:true});
+      }
+    });
+
   }else{
       res.end('Missing file');
   }
@@ -65,11 +75,39 @@ router.post('/in', function(req, res, next){
         res.status(200).json({result : true, name : cursor[0].name, email :req.body.email, id: cursor[0].id});
       else{
         res.status(200).json({result : false});
-
       }
-
     }
   });
 });
+router.get('/:email',function(req,res){
+  var email = req.params.email;
+  var filename;
+  db.query('select * from user where email=?',[req.params.email],function(error,cursor){
+    if(error){
+      res.status(500).json({error:error});
+    }
+    else{
+      if(cursor.length > 0){
+        filename=cursor[0].picture_id;
+        fs.readFile('./upload/'+email+'/'+filename,function(error,data){
+          if(error){
+            res.status(500).json({error:error});
+          }
+          else{
+            console.log("success!");
+            res.writeHead(200,{'Content-Type':'text/plain'});
+            res.end(data,'utf-8');
+          }
+        });
+      }
+      else{
+        res.end('Missing File');
+      }
+    }
+  });
+
+
+
+ });
 
 module.exports = router;
