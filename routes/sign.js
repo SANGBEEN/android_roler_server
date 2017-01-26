@@ -10,8 +10,8 @@ var upload = multer({
 });*/
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    let email = req.params.email;
-    let filepath = './upload/'+email;
+    var email = req.params.email;
+    var filepath = './upload/'+email;
     fs.mkdirsSync(filepath);
     cb(null, filepath)
   },

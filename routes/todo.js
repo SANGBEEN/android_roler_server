@@ -17,7 +17,7 @@ router.post('/create', function(req, res, next) {
 });
 
 router.delete('/delete', function(req, res, next) {
-  db.query('delete from todo where id = ?;', [req.query.role_id], function(error, cursor){
+  db.query('delete from todo where id = ?;', [req.query.id], function(error, cursor){
     if (error){
       res.status(500).json({result : error});
     }
@@ -33,7 +33,7 @@ router.put('/update', function(req, res, next) {
       res.status(500).json({result : error});
     }
     else {
-      res.status(200).end();
+      res.status(200).json({result : true});
     }
   });
 });
