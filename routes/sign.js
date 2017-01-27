@@ -24,6 +24,7 @@ var storage = multer.diskStorage({
 //UPDATE user SET picture_id="test1.jpg" where email="kozy@naver.com"
 var upload = multer({ storage: storage })
 router.post('/upload/:email',upload.single('myfile'), function(req,res){
+  var imageUrl='http://52.78.65.255:3000/sign/'+req.params.email;
   if(req.file){
     db.query('UPDATE user SET picture_id = ? where email= ?',[req.file.originalname, req.params.email],function(error,cursor){
       if(error){
@@ -31,7 +32,7 @@ router.post('/upload/:email',upload.single('myfile'), function(req,res){
       }
       else{
         console.log(req.file); //form files
-        res.status(200).json({result:true});
+        res.status(200).json({result:true, imageUrl:imageUrl});
       }
     });
 
@@ -89,14 +90,15 @@ router.get('/:email',function(req,res){
     else{
       if(cursor.length > 0){
         filename=cursor[0].picture_id;
-        fs.readFile('./upload/'+email+'/'+filename,function(error,data){
+        var path='./upload/'+email+'/'+filename;
+        fs.readFile(path,function(error,data){
           if(error){
-            res.status(500).json({error:error});
+            res.status(500).json({result:false, error:error});
           }
           else{
             console.log("success!");
-            res.writeHead(200,{'Content-Type':'text/plain'});
-            res.end(data,'utf-8');
+            res.writeHead(200,{'Content-Type':'text/plain;  charset=utf-8'});
+            res.end(data);
           }
         });
       }
