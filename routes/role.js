@@ -54,7 +54,7 @@ router.get('/read', function(req, res, next) {
       }
 
       else
-        res.status(200).json({result : '정보가 없습니다.'})
+        res.status(204).json({result : false, msg: '정보가 없습니다.'})
     }
   });
 });
