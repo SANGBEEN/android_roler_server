@@ -16,7 +16,7 @@ router.post('/create', function(req, res, next) {
 });
 
 router.delete('/delete', function(req, res, next) {
-  db.query('delete from role where id = ?;', [req.query.role_id], function(error, cursor){
+  db.query('delete from role where id = ?;', [req.query.id], function(error, cursor){
     if (error){
       res.status(500).json({result : error});
     }

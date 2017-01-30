@@ -80,7 +80,7 @@ router.post('/in', function(req, res, next){
     }
   });
 });
-router.get('/:email',function(req,res){
+router.get('/upload/:email',function(req,res){
   var email = req.params.email;
   var filename;
   db.query('select * from user where email=?',[req.params.email],function(error,cursor){
