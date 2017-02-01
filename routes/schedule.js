@@ -42,14 +42,19 @@ router.put('/update', function(req, res, next) {
 });
 
 router.get('/read', function(req, res, next) {
-  console.log(req.query.user_id);
+  var result=[];
   db.query('select * from schedule where user_id = ? and date = ? ;', [req.query.user_id, req.query.date], function(error, cursor){
     if (error){
       res.status(500).json({result : error});
     }
     else {
-      if (cursor.length > 0)
-        res.status(200).json({result : true});
+      if (cursor.length > 0){
+        for(var i=0;i<cursor.length;i++){
+          result.push({id:cursor[i].id, content:cursor[i].content, startTime:cursor[i].startTime, endTime:cursor[i].endTime, date:cursor[i].date, user_id:cursor[i].user_id});
+        }
+        res.status(200).json({result : true, params:result});
+      }
+
       else
         res.status(204).json({result : false, msg:'정보가 없습니다.'});
     }
