@@ -26,7 +26,7 @@ router.delete('/delete', function(req, res, next) {
     }
   });
 });
-
+/*
 router.put('/update', function(req, res, next) {
   db.query('update todo set content = ?, todoOrder = ?, isDone = ?, role_id = ? where id = ?;', [req.body.todoContent, req.body.todoOrder, req.body.isDone, req.body.role_id, req.body.todo_id], function(error, cursor){
     if (error){
@@ -37,7 +37,17 @@ router.put('/update', function(req, res, next) {
     }
   });
 });
-
+*/
+router.put('/done/:todo_id', function(req, res, next) {
+  db.query('update todo set isDone = ? where id = ?;', [req.query.isDone, req.params.todo_id], function(error, cursor){
+    if (error){
+      res.status(500).json({result : error});
+    }
+    else {
+      res.status(200).json({result : true});
+    }
+  });
+});
 router.get('/read', function(req, res, next) {
   db.query('select * from todo where user_id = ? and role_id=?;', [req.query.user_id, req.query.role_id], function(error, cursor){
     var result=[];
