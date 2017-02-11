@@ -12,7 +12,7 @@
  *----------------------------------------------------------------------------*/
 
 	var mysql = require('mysql');
-
+  var db_config = require('../config/db_config.json')
 
 
 /*----------------------------------------------------------------------------*
@@ -20,13 +20,13 @@
  *----------------------------------------------------------------------------*/
 
 	var pool  = mysql.createPool({
-					host 				: 'roler.cdqui1vgbssg.ap-northeast-2.rds.amazonaws.com',
-					user 				: 'hyunsung',
-					password 			: 'nanamare',
-					database 			: 'Roler',
-					debug				: false,	// FOR DEBUG
-					connectionLimit 	: 100,
-					waitForConnections 	: true
+					host 				: db_config.host,
+					user 				: db_config.user,
+					password 			: db_config.password,
+					database 			: db_config.database,
+					debug				: db_config.debug,	// FOR DEBUG
+					connectionLimit 	: db_config.connectionLimit,
+					waitForConnections 	: db_config.waitForConnections
 				});
 
 
