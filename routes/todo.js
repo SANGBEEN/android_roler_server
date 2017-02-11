@@ -10,34 +10,44 @@ router.post('/create', function(req, res, next) {
       res.status(500).json({result : error});
     }
     else {
-      res.status(200).json({result : true});
+      res.status(200).json({result : true, id:cursor.insertId });
     }
   });
 
 });
 
 router.delete('/delete', function(req, res, next) {
-  db.query('delete from todo where id = ?;', [req.query.role_id], function(error, cursor){
+  db.query('delete from todo where id = ?;', [req.query.id], function(error, cursor){
     if (error){
       res.status(500).json({result : error});
     }
     else {
-      res.status(200).end();
+      res.status(200).json({result : true});
     }
   });
 });
-
+/*
 router.put('/update', function(req, res, next) {
   db.query('update todo set content = ?, todoOrder = ?, isDone = ?, role_id = ? where id = ?;', [req.body.todoContent, req.body.todoOrder, req.body.isDone, req.body.role_id, req.body.todo_id], function(error, cursor){
     if (error){
       res.status(500).json({result : error});
     }
     else {
-      res.status(200).end();
+      res.status(200).json({result : true});
     }
   });
 });
-
+*/
+router.put('/done/:todo_id', function(req, res, next) {
+  db.query('update todo set isDone = ? where id = ?;', [req.query.isDone, req.params.todo_id], function(error, cursor){
+    if (error){
+      res.status(500).json({result : error});
+    }
+    else {
+      res.status(200).json({result : true});
+    }
+  });
+});
 router.get('/read', function(req, res, next) {
   db.query('select * from todo where user_id = ? and role_id=?;', [req.query.user_id, req.query.role_id], function(error, cursor){
     var result=[];
@@ -47,17 +57,17 @@ router.get('/read', function(req, res, next) {
     else {
       if (cursor.length > 0){
         for(var i=0;i<cursor.length;i++){
-          result.push({content:cursor[i].content, isDone:cursor[i].isDone, todoOrder: cursor[i].todoOrder});
+          result.push({id: cursor[i].id, content:cursor[i].content, isDone:cursor[i].isDone, todoOrder: cursor[i].todoOrder});
         }
 
         result.sort(function (a, b) {
-          return a.todoOrder < b.todoOrder ? -1 : a.todoOrder > b.todoOrder ? 1 : 0;
+          return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
         });
 
         res.status(200).json({result: true, params:result});
       }
       else
-        res.status(200).json({result : '정보가 없습니다.'})
+        res.status(204).json({result : false, msg: '정보가 없습니다.'})
     }
   });
 });

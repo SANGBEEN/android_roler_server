@@ -10,18 +10,18 @@ router.post('/create', function(req, res, next) {
       res.status(500).json({result : error});
     }
     else {
-      res.status(200).end();
+      res.status(200).json({result : true});
     }
   });
 });
 
 router.delete('/delete', function(req, res, next) {
-  db.query('delete from role where id = ?;', [req.query.role_id], function(error, cursor){
+  db.query('delete from role where id = ?;', [req.query.id], function(error, cursor){
     if (error){
       res.status(500).json({result : error});
     }
     else {
-      res.status(200).end();
+      res.status(200).json({result : true});
     }
   });
 });
@@ -32,7 +32,7 @@ router.put('/update', function(req, res, next) {
       res.status(500).json({result : error});
     }
     else {
-      res.status(200).end();
+      res.status(200).json({result : true});
     }
   });
 });
@@ -54,7 +54,7 @@ router.get('/read', function(req, res, next) {
       }
 
       else
-        res.status(200).json({result : '정보가 없습니다.'})
+        res.status(204).json({result : false, msg: '정보가 없습니다.'})
     }
   });
 });
