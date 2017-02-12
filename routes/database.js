@@ -12,7 +12,7 @@
  *----------------------------------------------------------------------------*/
 
 	var mysql = require('mysql');
-  var db_config = require('../config/db_config.json')
+  var db_config = require('../config/db-config.json')
 
 
 /*----------------------------------------------------------------------------*

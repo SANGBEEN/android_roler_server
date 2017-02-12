@@ -37,7 +37,7 @@ router.post('/upload/:email',upload.single('myfile'), function(req,res){
     });
 
   }else{
-      res.status(204).end('Missing file');
+      res.status(200).end('Missing file');
   }
 });
 router.post('/up', function(req, res, next) {
@@ -75,7 +75,7 @@ router.post('/in', function(req, res, next){
       if (cursor.length > 0)
         res.status(200).json({result : true, name : cursor[0].name, email :req.body.email, id: cursor[0].id});
       else{
-        res.status(204).json({result : false});
+        res.status(200).json({result : false});
       }
     }
   });
@@ -103,7 +103,7 @@ router.get('/upload/:email',function(req,res){
         });
       }
       else{
-        res.status(204).json({result:false, msg:'Missing File'});
+        res.status(200).json({result:false, msg:'Missing File'});
       }
     }
   });
