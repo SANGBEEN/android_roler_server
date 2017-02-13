@@ -67,10 +67,10 @@ router.get('/duplitcation', function(req, res, next){
 });
 router.post('/in', function(req, res, next){
   db.query('select * from user where email = ? and password = ?', [req.body.email, req.body.password], function(error, cursor){
-    console.log()
+    console.log(cursor[0].picture_id);
     var imageUrl;
-    if(cursor[0].picture_id==NULL){
-      imageUrl=NULL
+    if(cursor[0].picture_id==null){
+      imageUrl="";
     }else{
       imageUrl='http://52.78.65.255:3000/sign/upload/'+req.body.email;
     }
