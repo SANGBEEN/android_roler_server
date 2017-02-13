@@ -68,12 +68,18 @@ router.get('/duplitcation', function(req, res, next){
 router.post('/in', function(req, res, next){
   db.query('select * from user where email = ? and password = ?', [req.body.email, req.body.password], function(error, cursor){
     console.log()
+    var imageUrl;
+    if(cursor[0].picture_id==NULL){
+      imageUrl=NULL
+    }else{
+      imageUrl='http://52.78.65.255:3000/sign/upload/'+req.body.email;
+    }
     if (error){
       res.status(500).json({error : error});
     }
     else {
       if (cursor.length > 0)
-        res.status(200).json({result : true, name : cursor[0].name, email :req.body.email, id: cursor[0].id});
+        res.status(200).json({result : true, name : cursor[0].name, email :req.body.email, id: cursor[0].id, imageUrl:imageUrl});
       else{
         res.status(200).json({result : false});
       }
