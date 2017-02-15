@@ -15,6 +15,7 @@ var sign = require('./routes/sign');
 var role = require('./routes/role');
 var schedule = require('./routes/schedule');
 var todo = require('./routes/todo');
+var fcm = require('./routes/fcm');
 
 
 var app = express();
@@ -39,6 +40,7 @@ app.use('/sign', sign);
 app.use('/role', role);
 app.use('/schedule',schedule);
 app.use('/todo', todo);
+app.use('/fcm', fcm);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
