@@ -53,10 +53,9 @@ router.get('/read', function(req, res, next) {
           result.push({id:cursor[i].id, content:cursor[i].content, startTime:cursor[i].startTime, endTime:cursor[i].endTime, date:cursor[i].date, user_id:cursor[i].user_id});
         }
         res.status(200).json({result : true, params:result});
+      }else{
+        res.status(200).json({result : false, msg:'정보가 없습니다.'});
       }
-
-      else
-        res.status(204).json({result : false, msg:'정보가 없습니다.'});
     }
   });
 });

@@ -8,7 +8,7 @@ var fcm = new FCM(serverKey);
 require('date-utils');
 
 router.put('/register', function(req, res){
-  db.query('update user set token=? where id = ? ', [req.body.token, req.body.email], function(error, cursor){
+  db.query('update user set token=? where email = ?;', [req.body.token, req.body.email], function(error, cursor){
     if (error){
       res.status(500).json({result : error});
     }
@@ -21,7 +21,7 @@ router.put('/register', function(req, res){
 router.get('/push', function(req, res, next){
   var dt = new Date();
   var d = dt.toFormat('YYYY-MM-DD');
-  db.query('select s.user_id, u.id, u.token, s.content, s.starttime, s.date from schedule s inner JOIN user u on s.user_id = ? and u.id=? and date = ? order by starttime asc',[req.query.user_id, req.query.id, d], function(error, cursor){
+  db.query('select s.user_id, u.id, u.token, s.content, s.starttime, s.date from schedule s inner JOIN user u on s.user_id = ? and u.id=? and date = ? order by starttime asc;',[req.query.user_id, req.query.id, d], function(error, cursor){
     if (error){
       res.status(500).json({result : error});
     }
@@ -30,18 +30,20 @@ router.get('/push', function(req, res, next){
         var contents=[];
         for(var i=0;i<cursor.length;i++){
           contents.push({content:cursor[i].content});
+          console.log(contents[i].content);
         }
+        console.log("************************");
         var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
             to: cursor[0].token,
             collapse_key: 'schedule',
 
             notification: {
                 title: '오늘 해야 할 일',
-                body: "해야 할 일이 있습니다."//contents
+                body: 'contents'
             },
 
             data: {  //you can send only notification or only data(or include both)
-                my_key: 'my value',
+                my_key: contents,
                 my_another_key: 'my another value'
             }
         };
