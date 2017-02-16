@@ -37,7 +37,7 @@ router.get('/push', function(req, res, next){
 
             notification: {
                 title: '오늘 해야 할 일',
-                body: contents
+                body: "해야 할 일이 있습니다."//contents
             },
 
             data: {  //you can send only notification or only data(or include both)
