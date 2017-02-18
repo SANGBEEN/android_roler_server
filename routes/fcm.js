@@ -1,11 +1,25 @@
 var FCM = require('fcm-node');
 var express = require('express');
 var db = require('./database.js');
+var schedule = require('node-schedule');
 var router = express.Router();
 var fcm_config = require('../config/fcm-config.json');
 var serverKey = fcm_config.serverKey;
 var fcm = new FCM(serverKey);
 require('date-utils');
+
+var dt = new Date();
+var h = dt.toFormat('HH24');
+var job = schedule.scheduleJob('0 8,14,19 * * *', function(){
+  if(h == 08){
+
+  }else if(h == 14){
+
+  }else if(h == 19){
+
+  }
+  console.log("send push message");
+})
 
 router.put('/register', function(req, res){
   db.query('update user set token=? where email = ?;', [req.body.token, req.body.email], function(error, cursor){
