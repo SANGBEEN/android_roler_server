@@ -13,7 +13,7 @@ var dt = new Date();
 var d = dt.toFormat('YYYY-MM-DD');
 var h = dt.toFormat('HH24');
 
-var job = schedule.scheduleJob('/10 * * * *', function(){
+var job = schedule.scheduleJob('0 * * * *', function(){
   console.log("start push");
   async.waterfall([
     function(cb){
@@ -22,7 +22,7 @@ var job = schedule.scheduleJob('/10 * * * *', function(){
         if(error) console.log(error);
         for(var i=0;i<cursor.length;i++){
           if(cursor[i].token){
-            user.push({user:cursor[i].id});
+            user.push({id:cursor[i].id});
           }
         }
         cb(null,user);
@@ -49,7 +49,7 @@ var job = schedule.scheduleJob('/10 * * * *', function(){
 
                   notification: {
                       title: '오늘 해야 할 일',
-                      body: 'contents'
+                      body: contents
                   },
 
                   data: {  //you can send only notification or only data(or include both)
@@ -81,7 +81,7 @@ var job = schedule.scheduleJob('/10 * * * *', function(){
 
   }*/
   console.log("send push message");
-})
+});
 
 router.put('/register', function(req, res){
   db.query('update user set token=? where email = ?;', [req.body.token, req.body.email], function(error, cursor){
