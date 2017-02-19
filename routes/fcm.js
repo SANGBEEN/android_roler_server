@@ -15,6 +15,18 @@ var h = dt.toFormat('HH24');
 
 var job = schedule.scheduleJob('0 * * * *', function(){
   console.log("start push");
+  var startTime="";
+  var endTime="";
+  if(h == 09){
+    startTime="09:00:00";
+    endTime="14:00:00";
+  }else if(h == 14){
+    startTime="14:00:00";
+    endTime="19:00:00";
+  }else if(h == 19){
+    startTime="19:00:00";
+    endTime="23:59:59";
+  }
   async.waterfall([
     function(cb){
       var user=[];
@@ -31,7 +43,7 @@ var job = schedule.scheduleJob('0 * * * *', function(){
     function(error,result){
       if(error)console.log(error);
       for(var i=0;i<result.length;i++){
-        db.query('select s.user_id, u.id, u.token, s.content, s.starttime, s.date from schedule s inner JOIN user u on s.user_id = ? and u.id=? and date = ? order by starttime asc;',[result[i].id, result[i].id, d], function(error, cursor){
+        db.query('select s.user_id, u.id, u.token, s.content, s.starttime, s.date from schedule s inner JOIN user u on s.user_id = ? and u.id=? and date = ? and starttime > startTime and starttime < endTime order by starttime asc;',[result[i].id, result[i].id, d], function(error, cursor){
           if (error){
             console.log(error);
           }
@@ -72,14 +84,8 @@ var job = schedule.scheduleJob('0 * * * *', function(){
       }
     }
   );
-  /*
-  if(h == 09){
 
-  }else if(h == 14){
 
-  }else if(h == 19){
-
-  }*/
   console.log("send push message");
 });
 
