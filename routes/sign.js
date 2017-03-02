@@ -71,14 +71,14 @@ router.post('/in', function(req, res, next){
       res.status(500).json({error : error});
     }
     else{
-      console.log(cursor[0].email);
-      var imageUrl;
-      if(cursor[0].picture_id==null){
-        imageUrl="";
-      }else{
-        imageUrl='http://52.78.65.255:3000/sign/upload/'+req.body.email;
-      }
       if (cursor.length > 0){
+        console.log(cursor[0].email);
+        var imageUrl;
+        if(cursor[0].picture_id==null){
+          imageUrl="";
+        }else{
+          imageUrl='http://52.78.65.255:3000/sign/upload/'+req.body.email;
+        }
         res.status(200).json({result : true, name : cursor[0].name, email :req.body.email, id: cursor[0].id, imageUrl:imageUrl});
       }
       else{
