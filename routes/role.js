@@ -40,8 +40,8 @@ router.put('/update', function(req, res, next) {
 });
 
 router.get('/read', auth.isAuthenticated(), function(req, res, next) {
-  //console.log(req.query.user_id);
-  db.query('select * from role where user_id = ?', [req.query.user_id], function(error, cursor){
+
+  db.query('select * from role where user_id = ?', [req.user_id], function(error, cursor){
     //console.log(req.query.user_id);
     var result=[];
     if (error){

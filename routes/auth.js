@@ -17,16 +17,16 @@ function isAuthenticated() {
   return compose()
       // Validate jwt
       .use(function(req, res, next) {
-        // 만약 access_token 파라메터에 토큰을 설정한 경우 리퀘슽 헤더에 토큰을 설정한다.
-        if(req.query && req.query.hasOwnProperty('access_token')) {
-          req.headers.authorization = 'Bearer ' + req.query.access_token;
-        }else{
-          console.log("failed");
-          res.json({result:false, msg:"invaild token"})
-        }
+        var token = req.headers['access_token'];
+        if(!token) {
+        return res.status(403).json({
+            success: false,
+            message: 'not logged in'
+        })
+      }
 
         // 토큰 인증 로직
-        validateJwt(req, res, next);
+        validateJwt(req, res, next)
       })
       // Attach user to request
       .use(function(req, res, next) {
