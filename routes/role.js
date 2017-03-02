@@ -4,6 +4,7 @@ var multer = require('multer');
 var router   = express.Router();
 var db = require('./database');
 var async = require('async');
+var auth = require('./auth.js');
 
 router.post('/create', function(req, res, next) {
   db.query('insert into role(rolePrimary, roleName, roleContent, user_id) values(?,?,?,?);', [req.body.rolePrimary, req.body.roleName, req.body.roleContent, req.body.user_id], function(error, cursor){
@@ -38,7 +39,7 @@ router.put('/update', function(req, res, next) {
   });
 });
 
-router.get('/read', function(req, res, next) {
+router.get('/read', auth.isAuthenticated(), function(req, res, next) {
   //console.log(req.query.user_id);
   db.query('select * from role where user_id = ?', [req.query.user_id], function(error, cursor){
     //console.log(req.query.user_id);

@@ -3,6 +3,7 @@ var db = require('./database');
 var multer = require('multer');
 var fs    = require('fs-extra');
 var path = require('path');
+var auth = require('./auth.js');
 var router = express.Router();
 /*
 var upload = multer({
@@ -79,7 +80,8 @@ router.post('/in', function(req, res, next){
         }else{
           imageUrl='http://52.78.65.255:3000/sign/upload/'+req.body.email;
         }
-        res.status(200).json({result : true, name : cursor[0].name, email :req.body.email, id: cursor[0].id, imageUrl:imageUrl});
+        var token = auth.signToken(cursor[0].id, cursor[0].email);
+        res.status(200).json({result : true, name : cursor[0].name, email :req.body.email, id: cursor[0].id, imageUrl:imageUrl, access_token:token});
       }
       else{
         res.status(200).json({result : false});

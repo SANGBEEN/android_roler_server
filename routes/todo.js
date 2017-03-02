@@ -3,7 +3,7 @@ var mysql = require('mysql');
 var multer = require('multer');
 var router = express.Router();
 var db = require('./database');
-
+var auth = require('./auth.js');
 router.post('/create', function(req, res, next) {
   db.query('insert into todo(content, todoOrder, todoDate, role_id, user_id) values(?,?,?,?,?);', [req.body.content, req.body.todoOrder, req.body.todoDate, req.body.role_id, req.body.user_id], function(error, cursor){
     if (error){
