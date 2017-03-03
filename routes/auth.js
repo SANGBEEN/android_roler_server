@@ -11,30 +11,58 @@ var EXPIRES = 240;
 function signToken(id,email) {
   return jwt.sign({id: id, email:email}, SECRET, { expiresIn: EXPIRES });
 }
-// 인증 확인 부분
-function isAuthenticated(req,res){
-    var token = req.headers['access_token'];
-    try{
-      if (token){
-          jwt.verify(token, SECRET, function(err, decoded) {
-
-              if ( err ) {
-                  return res.status(403).send({ success : false, message : '토큰 인증 실패.'});
-              } else {
-                  console.log('token verify');
-                  return decoded;
-
-              }
-          });
-      } else {
-          return res.status(403).send({success : false, message : '인증 토큰이 없습니다.'});
+// 토큰을 해석하여 유저 정보를 얻는 함수
+function isAuthenticated() {
+  return compose()
+      // Validate jwt
+      .use(function(req, res, next) {
+        var token = req.headers['access_token'];
+        if(token){
+          var decoded = jwt.verify(token, SECRET, function(err,decoded){
+            if ( err ) {
+                return res.status(403).send({ success : false, message : '토큰 인증 실패.'});
+            } else {
+                console.log('token verify');
+                req.user = decoded;
+                next();
+            }
+        });
       }
-    }catch(err){
-      console.log(err);
-      return res.status(500).json({result:err});
-    }
+    })
+      // Attach user to request
+      .use(function(req, res, next) {
+        req.user = {
+          id: req.user.id,
+          email: req.user.email
+        };
+        next();
+      });
+}
 
-};
+// 인증 확인 부분
+// function isAuthenticated(req,res){
+//     var token = req.headers['access_token'];
+//     try{
+//       if (token){
+//           jwt.verify(token, SECRET, function(err, decoded) {
+//
+//               if ( err ) {
+//                   return res.status(403).send({ success : false, message : '토큰 인증 실패.'});
+//               } else {
+//                   console.log('token verify');
+//                   return decoded;
+//
+//               }
+//           });
+//       } else {
+//           return res.status(403).send({success : false, message : '인증 토큰이 없습니다.'});
+//       }
+//     }catch(err){
+//       console.log(err);
+//       return res.status(500).json({result:err});
+//     }
+//
+// };
 
 
 
