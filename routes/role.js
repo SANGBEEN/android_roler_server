@@ -4,7 +4,10 @@ var multer = require('multer');
 var router   = express.Router();
 var db = require('./database');
 var async = require('async');
-var auth = require('./auth.js');
+var auth = require('./auth');
+var token_config = require('../config/token-config.json')
+var SECRET = token_config.secret;
+var jwt = require('jsonwebtoken');
 
 router.post('/create', function(req, res, next) {
   db.query('insert into role(rolePrimary, roleName, roleContent, user_id) values(?,?,?,?);', [req.body.rolePrimary, req.body.roleName, req.body.roleContent, req.body.user_id], function(error, cursor){
@@ -39,9 +42,41 @@ router.put('/update', function(req, res, next) {
   });
 });
 
-router.get('/read', auth.isAuthenticated(), function(req, res, next) {
+router.get('/read', function(req, res, next) {
+  console.log("**************");
+  //var token = auth.isAuthenticated();
+  //console.log(token);
+  //  console.log(req.decoded.email);
+  // var token = req.headers['access_token'];
+  // console.log(token);
+  // console.log("**************");
+  // try{
+  //   var decoded = jwt.verify(token, SECRET);
+  //   console.log(decoded.id);
+  // }catch(err){
+  //   console.log("error");
+  //   console.log(err);
+  // }
+  // if (token){
+  //     jwt.verify(token, SECRET, function(err, decoded) {
+  //
+  //         if ( err ) {
+  //             return res.status(403).send({ success : false, message : '토큰 인증 실패.'});
+  //         } else {
+  //             console.log(docoded.id);
+  //             // req.decoded = decoded;
+  //             // console.log(req.decoded);
+  //
+  //         }
+  //     });
+  // }
+  try{
+      var token = auth.isAuthenticated(req,res);
+  }catch(err){
+    console.log(err);
+  }
 
-  db.query('select * from role where user_id = ?', [req.user_id], function(error, cursor){
+  db.query('select * from role where user_id = ?', 66, function(error, cursor){
     //console.log(req.query.user_id);
     var result=[];
     if (error){

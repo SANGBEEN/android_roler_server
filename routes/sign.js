@@ -73,7 +73,6 @@ router.post('/in', function(req, res, next){
     }
     else{
       if (cursor.length > 0){
-        console.log(cursor[0].email);
         var imageUrl;
         if(cursor[0].picture_id==null){
           imageUrl="";
