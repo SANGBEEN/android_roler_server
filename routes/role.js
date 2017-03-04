@@ -4,9 +4,13 @@ var multer = require('multer');
 var router   = express.Router();
 var db = require('./database');
 var async = require('async');
+var auth = require('./auth');
+//var token_config = require('../config/token-config.json')
+//var SECRET = token_config.secret;
+//var jwt = require('jsonwebtoken');
 
-router.post('/create', function(req, res, next) {
-  db.query('insert into role(rolePrimary, roleName, roleContent, user_id) values(?,?,?,?);', [req.body.rolePrimary, req.body.roleName, req.body.roleContent, req.body.user_id], function(error, cursor){
+router.post('/create', auth.isAuthenticated(), function(req, res, next) {
+  db.query('insert into role(rolePrimary, roleName, roleContent, user_id) values(?,?,?,?);', [req.body.rolePrimary, req.body.roleName, req.body.roleContent, req.user.id], function(error, cursor){
     if (error){
       res.status(500).json({result : error});
     }
@@ -16,7 +20,7 @@ router.post('/create', function(req, res, next) {
   });
 });
 
-router.delete('/delete', function(req, res, next) {
+router.delete('/delete', auth.isAuthenticated(), function(req, res, next) {
   db.query('delete from role where id = ?;', [req.query.id], function(error, cursor){
     if (error){
       res.status(500).json({result : error});
@@ -27,7 +31,7 @@ router.delete('/delete', function(req, res, next) {
   });
 });
 
-router.put('/update', function(req, res, next) {
+router.put('/update', auth.isAuthenticated(), function(req, res, next) {
   db.query('update role set rolePrimary = ?, roleName = ?, roleContent = ? where id = ?;', [req.body.rolePrimary, req.body.roleName, req.body.roleContent, req.body.role_id], function(error, cursor){
     if (error){
       res.status(500).json({result : error});
@@ -38,9 +42,9 @@ router.put('/update', function(req, res, next) {
   });
 });
 
-router.get('/read', function(req, res, next) {
-  //console.log(req.query.user_id);
-  db.query('select * from role where user_id = ?', [req.query.user_id], function(error, cursor){
+router.get('/read', auth.isAuthenticated(), function(req, res, next) {
+  console.log(req.user);
+  db.query('select * from role where user_id = ?', [req.user.id], function(error, cursor){
     //console.log(req.query.user_id);
     var result=[];
     if (error){
@@ -60,10 +64,10 @@ router.get('/read', function(req, res, next) {
   });
 });
 
-router.put('/progress', function(req, res, next){
+router.put('/progress', auth.isAuthenticated(), function(req, res, next){
   async.waterfall([
     function(cb){
-      db.query('select * from todo where role_id=? and user_id=?', [req.query.role_id, req.query.user_id], function(error,cursor){
+      db.query('select * from todo where role_id=? and user_id=?', [req.query.role_id, req.user.id], function(error,cursor){
         if(error) console.log(error);
         else{
           cb(null,cursor);
@@ -85,7 +89,7 @@ router.put('/progress', function(req, res, next){
   ],
   function(err,result){
     if(err)console.log(err);
-    db.query('update role set progress=? where id=? and user_id=?', [result, req.query.role_id, req.query.user_id],function(error, cursor){
+    db.query('update role set progress=? where id=? and user_id=?', [result, req.query.role_id, req.user.id],function(error, cursor){
       if(error){
         res.status(500).json({result:false});
       }else{

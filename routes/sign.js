@@ -3,7 +3,9 @@ var db = require('./database');
 var multer = require('multer');
 var fs    = require('fs-extra');
 var path = require('path');
+var auth = require('./auth.js');
 var router = express.Router();
+var auth = require('./auth');
 /*
 var upload = multer({
   dest: path.join(__dirname, '../upload')
@@ -72,14 +74,14 @@ router.post('/in', function(req, res, next){
     }
     else{
       if (cursor.length > 0){
-        console.log(cursor[0].email);
         var imageUrl;
         if(cursor[0].picture_id==null){
           imageUrl="";
         }else{
           imageUrl='http://52.78.65.255:3000/sign/upload/'+req.body.email;
         }
-        res.status(200).json({result : true, name : cursor[0].name, email :req.body.email, id: cursor[0].id, imageUrl:imageUrl});
+        var token = auth.signToken(cursor[0].id, cursor[0].email);
+        res.status(200).json({result : true, name : cursor[0].name, email :req.body.email, id: cursor[0].id, imageUrl:imageUrl, access_token:token});
       }
       else{
         res.status(200).json({result : false});
@@ -87,10 +89,10 @@ router.post('/in', function(req, res, next){
     }
   });
 });
-router.get('/upload/:email',function(req,res){
-  var email = req.params.email;
+router.get('/upload', auth.isAuthenticated(), function(req,res){
+  var email = req.user.email;
   var filename;
-  db.query('select * from user where email=?',[req.params.email],function(error,cursor){
+  db.query('select * from user where email=?',[req.user.email],function(error,cursor){
     if(error){
       res.status(500).json({error:error});
     }
