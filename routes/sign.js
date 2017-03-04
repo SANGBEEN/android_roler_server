@@ -6,6 +6,7 @@ var path = require('path');
 var auth = require('./auth.js');
 var router = express.Router();
 var auth = require('./auth');
+var crypto = require('crypto');
 /*
 var upload = multer({
   dest: path.join(__dirname, '../upload')
@@ -25,10 +26,10 @@ var storage = multer.diskStorage({
 });
 //UPDATE user SET picture_id="test1.jpg" where email="kozy@naver.com"
 var upload = multer({ storage: storage })
-router.post('/upload/:email',upload.single('myfile'), function(req,res){
-  var imageUrl='http://52.78.65.255:3000/sign/upload/'+req.params.email;
+router.post('/upload/:email', auth.isAuthenticated(), upload.single('myfile'), function(req,res,next){
+  var imageUrl='http://52.78.65.255:3000/sign/upload/'+req.user.email;
   if(req.file){
-    db.query('UPDATE user SET picture_id = ? where email= ?',[req.file.originalname, req.params.email],function(error,cursor){
+    db.query('UPDATE user SET picture_id = ? where email= ?',[req.file.originalname, req.user.email],function(error,cursor){
       if(error){
         res.status(500).json({result : error});
       }
@@ -43,7 +44,8 @@ router.post('/upload/:email',upload.single('myfile'), function(req,res){
   }
 });
 router.post('/up', function(req, res, next) {
-  db.query('insert into user(name, email, password) values(?,?,?)', [req.body.name, req.body.email, req.body.password], function(error, cursor){
+  var hash = crypto.createHash('sha256').update(req.body.password).digest('hex');
+  db.query('insert into user(name, email, password) values(?,?,?)', [req.body.name, req.body.email, hash], function(error, cursor){
     if (error){
       res.status(500).json({result : error});
     }
@@ -68,7 +70,8 @@ router.get('/duplitcation', function(req, res, next){
   });
 });
 router.post('/in', function(req, res, next){
-  db.query('select * from user where email = ? and password = ?;', [req.body.email, req.body.password], function(error, cursor){
+  var hash = crypto.createHash('sha256').update(req.body.password).digest('hex');
+  db.query('select * from user where email = ? and password = ?;', [req.body.email, hash], function(error, cursor){
     if (error){
       res.status(500).json({error : error});
     }
