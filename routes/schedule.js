@@ -2,12 +2,12 @@ var express = require('express');
 var mysql = require('mysql');
 var db    = require('./database');
 var router = express.Router();
+var auth = require('./auth');
 
 
-
-router.post('/create', function(req, res, next) {
+router.post('/create', auth.isAuthenticated(), function(req, res, next) {
   //console.log(req.body);
-  db.query('insert into schedule(content, startTime, endTime, date, user_id, role_id) values(?,?,?,?,?,?);', [req.body.content, req.body.startTime, req.body.endTime, req.body.date, req.body.user_id, req.body.role_id], function(error, cursor){
+  db.query('insert into schedule(content, startTime, endTime, date, user_id, role_id) values(?,?,?,?,?,?);', [req.body.content, req.body.startTime, req.body.endTime, req.body.date, req.user.id, req.body.role_id], function(error, cursor){
     if (error){
       res.status(500).json({result : error});
     }
@@ -17,7 +17,7 @@ router.post('/create', function(req, res, next) {
   });
 });
 
-router.delete('/delete', function(req, res, next) {
+router.delete('/delete', auth.isAuthenticated(), function(req, res, next) {
   console.log(req.query.id);
   db.query('delete from schedule where id = ?;', [req.query.id], function(error, cursor){
     if (error){
@@ -29,9 +29,9 @@ router.delete('/delete', function(req, res, next) {
   });
 });
 
-router.put('/update', function(req, res, next) {
+router.put('/update', auth.isAuthenticated(), function(req, res, next) {
   console.log(req.body);
-  db.query('update schedule set content = ?, startTime = ?, endTime = ?, date= ?, role_id = ?  where id = ?;', [req.body.content, req.body.startTime, req.body.endTime, req.body.date, req.body.role_id, req.body.id], function(error, cursor){
+  db.query('update schedule set content = ?, startTime = ?, endTime = ?, date= ?, role_id = ?  where id = ?;', [req.body.content, req.body.startTime, req.body.endTime, req.body.date, req.body.role_id, req.user.id], function(error, cursor){
     if (error){
       res.status(500).json({result : error});
     }
@@ -41,9 +41,9 @@ router.put('/update', function(req, res, next) {
   });
 });
 
-router.get('/read', function(req, res, next) {
+router.get('/read', auth.isAuthenticated(), function(req, res, next) {
   var result=[];
-  db.query('select * from schedule where user_id = ? and date = ? ;', [req.query.user_id, req.query.date], function(error, cursor){
+  db.query('select * from schedule where user_id = ? and date = ? ;', [req.user.id, req.query.date], function(error, cursor){
     if (error){
       res.status(500).json({result : error});
     }

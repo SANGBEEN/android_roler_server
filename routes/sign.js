@@ -5,6 +5,7 @@ var fs    = require('fs-extra');
 var path = require('path');
 var auth = require('./auth.js');
 var router = express.Router();
+var auth = require('./auth');
 /*
 var upload = multer({
   dest: path.join(__dirname, '../upload')
@@ -88,10 +89,10 @@ router.post('/in', function(req, res, next){
     }
   });
 });
-router.get('/upload/:email',function(req,res){
-  var email = req.params.email;
+router.get('/upload', auth.isAuthenticated(), function(req,res){
+  var email = req.user.email;
   var filename;
-  db.query('select * from user where email=?',[req.params.email],function(error,cursor){
+  db.query('select * from user where email=?',[req.user.email],function(error,cursor){
     if(error){
       res.status(500).json({error:error});
     }

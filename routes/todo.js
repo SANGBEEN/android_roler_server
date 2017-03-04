@@ -3,9 +3,9 @@ var mysql = require('mysql');
 var multer = require('multer');
 var router = express.Router();
 var db = require('./database');
-var auth = require('./auth.js');
-router.post('/create', function(req, res, next) {
-  db.query('insert into todo(content, todoOrder, todoDate, role_id, user_id) values(?,?,?,?,?);', [req.body.content, req.body.todoOrder, req.body.todoDate, req.body.role_id, req.body.user_id], function(error, cursor){
+var auth = require('./auth');
+router.post('/create', auth.isAuthenticated(), function(req, res, next) {
+  db.query('insert into todo(content, todoOrder, todoDate, role_id, user_id) values(?,?,?,?,?);', [req.body.content, req.body.todoOrder, req.body.todoDate, req.body.role_id, req.user.id], function(error, cursor){
     if (error){
       res.status(500).json({result : error});
     }
@@ -16,7 +16,7 @@ router.post('/create', function(req, res, next) {
 
 });
 
-router.delete('/delete', function(req, res, next) {
+router.delete('/delete', auth.isAuthenticated(), function(req, res, next) {
   db.query('delete from todo where id = ?;', [req.query.id], function(error, cursor){
     if (error){
       res.status(500).json({result : error});
@@ -38,7 +38,7 @@ router.put('/update', function(req, res, next) {
   });
 });
 */
-router.put('/done/:todo_id', function(req, res, next) {
+router.put('/done/:todo_id', auth.isAuthenticated(), function(req, res, next) {
   db.query('update todo set isDone = ? where id = ?;', [req.query.isDone, req.params.todo_id], function(error, cursor){
     if (error){
       res.status(500).json({result : error});
@@ -48,8 +48,8 @@ router.put('/done/:todo_id', function(req, res, next) {
     }
   });
 });
-router.get('/read', function(req, res, next) {
-  db.query('select * from todo where user_id = ? and role_id=?;', [req.query.user_id, req.query.role_id], function(error, cursor){
+router.get('/read', auth.isAuthenticated(),function(req, res, next) {
+  db.query('select * from todo where user_id = ? and role_id=?;', [req.user.id, req.query.role_id], function(error, cursor){
     var result=[];
     if (error){
       res.status(500).json({result : error});
