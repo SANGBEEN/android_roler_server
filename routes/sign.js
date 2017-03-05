@@ -14,7 +14,7 @@ var upload = multer({
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    var email = req.params.email;
+    var email = req.user.email;
     var filepath = './upload/'+email;
     fs.mkdirsSync(filepath);
     cb(null, filepath)
@@ -26,8 +26,8 @@ var storage = multer.diskStorage({
 //UPDATE user SET picture_id="test1.jpg" where email="kozy@naver.com"
 var upload = multer({ storage: storage })
 router.post('/upload', auth.isAuthenticated(), upload.single('myfile'), function(req,res,next){
-  var imageUrl='http://52.78.65.255:3000/sign/upload/'+req.user.email;
   if(req.file){
+    var imageUrl='http://52.78.65.255:3000/sign/upload/'+req.user.email;
     db.query('UPDATE user SET picture_id = ? where email= ?',[req.file.originalname, req.user.email],function(error,cursor){
       if(error){
         res.status(500).json({result : error});
@@ -91,36 +91,35 @@ router.post('/in', function(req, res, next){
     }
   });
 });
-router.get('/upload', auth.isAuthenticated(), function(req,res){
-  var email = req.user.email;
-  var filename;
-  db.query('select * from user where email=?',[req.user.email],function(error,cursor){
-    if(error){
-      res.status(500).json({error:error});
-    }
-    else{
-      if(cursor.length > 0){
-        filename=cursor[0].picture_id;
-        var path='./upload/'+email+'/'+filename;
-        fs.readFile(path,function(error,data){
-          if(error){
-            res.status(500).json({result:false, error:error});
-          }
-          else{
-            console.log("success!");
-            res.writeHead(200,{'Content-Type':'text/plain;  charset=utf-8'});
-            res.end(data);
-          }
-        });
+
+router.get('/upload/:email', function(req,res,next){
+    var email = req.params.email;
+    console.log(email);
+    var filename;
+    db.query('select * from user where email=?',[req.params.email],function(error,cursor){
+      if(error){
+        res.status(500).json({error:error});
       }
       else{
-        res.status(200).json({result:false, msg:'Missing File'});
+        if(cursor.length > 0){
+          filename=cursor[0].picture_id;
+          var path='./upload/'+email+'/'+filename;
+          fs.readFile(path,function(error,data){
+            if(error){
+              res.status(500).json({result:false, error:error});
+            }
+            else{
+              console.log("success!");
+              res.writeHead(200,{'Content-Type':'text/plain;  charset=utf-8'});
+              res.end(data);
+            }
+          });
+        }
+        else{
+          res.status(200).json({result:false, msg:'Missing File'});
+        }
       }
-    }
-  });
-
-
-
+    });
  });
 
 module.exports = router;
