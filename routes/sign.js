@@ -3,7 +3,6 @@ var db = require('./database');
 var multer = require('multer');
 var fs    = require('fs-extra');
 var path = require('path');
-var auth = require('./auth.js');
 var router = express.Router();
 var auth = require('./auth');
 var crypto = require('crypto');
