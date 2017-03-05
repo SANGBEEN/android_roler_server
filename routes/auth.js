@@ -5,7 +5,7 @@ var compose = require('composable-middleware');
 //var express = require('express');
 //var router = express.Router();
 var SECRET = token_config.secret;
-var EXPIRES = 240;
+var EXPIRES = "4h";
 
 // JWT 토큰 생성 함수
 function signToken(id,email) {
@@ -20,7 +20,7 @@ function isAuthenticated() {
         if(token){
           var decoded = jwt.verify(token, SECRET, function(err,decoded){
             if ( err ) {
-                return res.status(403).send({ success : false, message : '토큰 인증 실패.'});
+                return res.status(403).send({ result : false, message : '토큰 인증 실패.'});
             } else {
                 console.log('token verify');
                 req.user = decoded;
