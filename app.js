@@ -11,7 +11,7 @@ var methodOverride = require('method-override');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
-var sign = require('./routes/sign');
+//var sign = require('./routes/sign');
 var role = require('./routes/role');
 var schedule = require('./routes/schedule');
 var todo = require('./routes/todo');
@@ -37,7 +37,7 @@ app.use(methodOverride());
 
 app.use('/', routes);
 app.use('/users', users);
-app.use('/sign', sign);
+//app.use('/sign', sign);
 app.use('/role', role);
 app.use('/schedule',schedule);
 app.use('/todo', todo);
