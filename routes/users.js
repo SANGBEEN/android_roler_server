@@ -6,6 +6,7 @@ var path = require('path');
 var router = express.Router();
 var auth = require('./auth');
 var crypto = require('crypto');
+var Email = require('email').Email;
 /*
 var upload = multer({
   dest: path.join(__dirname, '../upload')
@@ -121,5 +122,21 @@ router.get('/upload/:email', function(req,res,next){
       }
     });
  });
+router.get('/send', function(req, res, next){
+  db.query('select * from')
+  var myMsg = new Email(
+    { from: "cordorshs@gmail.com"
+    , to:   "to@naver.com"
+    , subject: "롤러 비밀번호 변경"
+    , body: ""
+  });
+  myMsg.send(function(err){
+    if(err){
+      res.status(500).json({result:false, error:err});
+    }
+    res.status(200).json({result:true});
+  });
+});
+
 
 module.exports = router;
