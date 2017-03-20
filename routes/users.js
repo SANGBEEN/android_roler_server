@@ -123,12 +123,12 @@ router.get('/upload/:email', function(req,res,next){
     });
  });
 router.get('/send', function(req, res, next){
-  db.query('select * from')
+  //db.query('select * from')
   var myMsg = new Email(
     { from: "cordorshs@gmail.com"
     , to:   "to@naver.com"
     , subject: "롤러 비밀번호 변경"
-    , body: ""
+    , body: "link"
   });
   myMsg.send(function(err){
     if(err){
@@ -137,6 +137,21 @@ router.get('/send', function(req, res, next){
     res.status(200).json({result:true});
   });
 });
-
-
+router.get('/check', function(req, res, next){
+  db.query('select * from user where name=? and email=?', [req.query.name, req.query.email],function(err,cursor){
+    if (err){
+      res.status(500).json({result:false, error:err});
+    }
+    if(cursor.length>0){
+      res.status(200).json({result:true, msg:'확인되었습니다. 이메일을 확인해주세요.'});
+    }
+  });
+});
+router.post('/change', function(req, res, next){
+  var hash = crypto.createHash('sha256').update(req.body.password).digest('hex');
+  db.query('update user set password=? where email=?', [hash, req.body.email], function(err,cursor){
+    if(err) res.status(500).json({result:fasle, error:err});
+    res.status(200).json({result:true, msg:'비밀번호를 변경했습니다. 다시 로그인해주세요.'});
+  });
+});
 module.exports = router;
