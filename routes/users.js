@@ -123,19 +123,27 @@ router.get('/upload/:email', function(req,res,next){
     });
  });
 router.get('/send', function(req, res, next){
-  //db.query('select * from')
-  var myMsg = new Email(
-    { from: "cordorshs@gmail.com"
-    , to:   "to@naver.com"
-    , subject: "롤러 비밀번호 변경"
-    , body: "link"
-  });
-  myMsg.send(function(err){
-    if(err){
-      res.status(500).json({result:false, error:err});
+  db.query('select * from users where email = ?', req.query.email, function(err,cursor){
+    if(err)res.status(500).json({result:false, error:err});
+    if(cursor[0].length>0){
+      var myMsg = new Email(
+        { from: req.query.email
+        , to:   "to@naver.com"
+        , subject: "롤러 비밀번호 변경"
+        , body: "link"
+      });
+      myMsg.send(function(err){
+        if(err){
+          res.status(500).json({result:false, error:err});
+        }
+        res.status(200).json({result:true});
+      });
+    }else{
+      res.status(200).json({result:true, msg:''})
     }
-    res.status(200).json({result:true});
+
   });
+
 });
 router.get('/check', function(req, res, next){
   db.query('select * from user where name=? and email=?', [req.query.name, req.query.email],function(err,cursor){
@@ -144,6 +152,8 @@ router.get('/check', function(req, res, next){
     }
     if(cursor.length>0){
       res.status(200).json({result:true, msg:'확인되었습니다. 이메일을 확인해주세요.'});
+    }else{
+      res.status(200).json({result:true, msg:'사용자 정보가 존재하지 않습니다. 이름과 이메일을 확인해주세요.'});
     }
   });
 });
