@@ -5,11 +5,19 @@ var compose = require('composable-middleware');
 //var express = require('express');
 //var router = express.Router();
 var SECRET = token_config.secret;
-var EXPIRES = "4h";
-
-// JWT 토큰 생성 함수
-function signToken(id,email) {
+var EXPIRES = "1h";
+/*  TODO
+    리프레시 토큰있는지 확인한 후 있으면 있으면 액세스 토큰 발행, 없으면 리프레시 토큰 발행 후 액세스 토큰 발행
+    토큰이 만료되었을경우 리프레시 토큰을 이용해 액세스 토큰 발행
+    DB추가해야함
+*/
+// access_token 토큰 생성 함수
+function signAccessToken(id,email) {
   return jwt.sign({id: id, email:email}, SECRET, { expiresIn: EXPIRES });
+}
+// refresh_token 토큰 생성 함수
+function signRefreshToken(id,email) {
+  return jwt.sign({id: id, email:email}, SECRET, { expiresIn: "365d" });
 }
 // 토큰을 해석하여 유저 정보를 얻는 함수
 function isAuthenticated() {
@@ -27,6 +35,8 @@ function isAuthenticated() {
                 next();
             }
         });
+      }else{
+        return res.status(403).send({success : false, message : '인증 토큰이 없습니다.'});
       }
     })
       // Attach user to request
