@@ -166,7 +166,7 @@ router.get('/check', function(req, res, next){
       });
       res.status(200).json({result:true, confirmation_token:confirmation_token, msg:'확인되었습니다. 이메일을 확인해주세요.'});
     }else{
-      res.status(200).json({result:true, msg:'사용자 정보가 존재하지 않습니다. 이름과 이메일을 확인해주세요.'});
+      res.status(200).json({result:false, msg:'사용자 정보가 존재하지 않습니다. 이름과 이메일을 확인해주세요.'});
     }
   });
 });
