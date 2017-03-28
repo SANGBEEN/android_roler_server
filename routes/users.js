@@ -6,7 +6,16 @@ var path = require('path');
 var router = express.Router();
 var auth = require('./auth');
 var crypto = require('crypto');
-var Email = require('email').Email;
+//var Email = require('email').Email;
+var email = require('emailjs');
+var token_config = require('../config/token-config.json')
+var server = email.server.connect({
+    user: "isb9444@naver.com(메일주소)",
+    password: token_config.pass,
+    host: "smtp.naver.com",
+    port: 465,
+    ssl: true
+});
 /*
 var upload = multer({
   dest: path.join(__dirname, '../upload')
@@ -156,17 +165,14 @@ router.get('/check', function(req, res, next){
       res.status(500).json({result:false, error:err});
     }
     if(cursor.length>0){
-        var myMsg = new Email(
-          { from: "cordorshs@gmail.com"
-          , to:   req.query.email
-          , subject: "롤러 비밀번호 변경"
-          , body: confirmation_token
-        });
-      myMsg.send(function(err){
-        if(err){
-          console.log('error');
-          res.status(500).json({result:false, error:err});
-      }
+      var message = {
+        text: confirmation_token,
+        from: 'isb9444@naver.com',
+        to: req.query.email,
+        subject: "롤러 비밀번호 변경"
+      };
+      server.send(message, function (err, message) {
+      console.log(err || message);      
       });
       res.status(200).json({result:true, confirmation_token:confirmation_token, msg:'확인되었습니다. 이메일을 확인해주세요.'});
     }else{
