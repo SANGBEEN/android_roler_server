@@ -146,12 +146,25 @@ router.get('/send', function(req, res, next){
 
 });
 router.get('/check', function(req, res, next){
+  var rndstr = new RndStr();
+  rndstr.setType(0);
+  rndstr.setStr(16);
+  var confirmation_token= rndstr.getStr();
   db.query('select * from user where name=? and email=?', [req.query.name, req.query.email],function(err,cursor){
     if (err){
       res.status(500).json({result:false, error:err});
     }
     if(cursor.length>0){
-      res.status(200).json({result:true, msg:'확인되었습니다. 이메일을 확인해주세요.'});
+      var myMsg = new Email(
+        { from: "cordorshs@gmail.com"
+        , to:   req.query.email
+        , subject: "롤러 비밀번호 변경"
+        , body: confirmation_token
+      });
+      myMsg.send(function(err){
+        if(err)res.status(500).json({result:false, error:err});
+      });
+      res.status(200).json({result:true, confirmation_token:confirmation_token, msg:'확인되었습니다. 이메일을 확인해주세요.'});
     }else{
       res.status(200).json({result:true, msg:'사용자 정보가 존재하지 않습니다. 이름과 이메일을 확인해주세요.'});
     }
@@ -164,4 +177,43 @@ router.post('/change', function(req, res, next){
     res.status(200).json({result:true, msg:'비밀번호를 변경했습니다. 다시 로그인해주세요.'});
   });
 });
+
+
+function RndStr() {
+    this.str = '';
+    this.pattern = /^[a-zA-Z0-9]+$/;
+
+    this.setStr = function(n) {
+        if (!/^[0-9]+$/.test(n)) n = 0x10;
+        this.str = '';
+        for (var i = 0; i < n-1; i++) {
+            this.rndchar();
+        }
+    }
+
+    this.setType = function(s) {
+        switch(s) {
+            case '1' : this.pattern = /^[0-9]+$/; break;
+            case 'A' : this.pattern = /^[A-Z]+$/; break;
+            case 'a' : this.pattern = /^[a-z]+$/; break;
+            case 'A1' : this.pattern = /^[A-Z0-9]+$/; break;
+            case 'a1' : this.pattern = /^[a-z0-9]+$/; break;
+            default : this.pattern = /^[a-zA-Z0-9]+$/;
+        }
+    }
+
+    this.getStr = function() {
+        return this.str;
+    }
+
+    this.rndchar = function() {
+        var rnd = Math.round(Math.random() * 1000);
+        if (!this.pattern.test(String.fromCharCode(rnd))) {
+            this.rndchar();
+        } else {
+            this.str += String.fromCharCode(rnd);
+        }
+    }
+}
+
 module.exports = router;
