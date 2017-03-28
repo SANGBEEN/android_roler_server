@@ -162,7 +162,10 @@ router.get('/check', function(req, res, next){
         , body: confirmation_token
       });
       myMsg.send(function(err){
-        if(err)res.status(500).json({result:false, error:err});
+        if(err){
+          console.log('sjflksdjfldsjflsdjflkdsjlfdsjlfds');
+          res.status(500).json({result:false, error:err});
+      }    
       });
       res.status(200).json({result:true, confirmation_token:confirmation_token, msg:'확인되었습니다. 이메일을 확인해주세요.'});
     }else{
