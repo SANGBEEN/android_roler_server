@@ -172,7 +172,11 @@ router.get('/check', function(req, res, next){
         subject: "롤러 비밀번호 변경"
       };
       server.send(message, function (err, message) {
-      console.log(err || message);
+        if(err){
+          console.log(err);
+          res.status(500).json({result:false, msg:"메일전송실패"});
+        }
+        console.log(message);
       });
       res.status(200).json({result:true, confirmation_token:confirmation_token, msg:'확인되었습니다. 이메일을 확인해주세요.'});
     }else{
