@@ -155,17 +155,21 @@ router.get('/check', function(req, res, next){
       res.status(500).json({result:false, error:err});
     }
     if(cursor.length>0){
-      var myMsg = new Email(
-        { from: "cordorshs@gmail.com"
-        , to:   req.query.email
-        , subject: "롤러 비밀번호 변경"
-        , body: confirmation_token
-      });
+      try{
+        var myMsg = new Email(
+          { from: "cordorshs@gmail.com"
+          , to:   req.query.email
+          , subject: "롤러 비밀번호 변경"
+          , body: confirmation_token
+        });
+      }catch(e){
+        console.log('failed');
+      }
       myMsg.send(function(err){
         if(err){
-          console.log('sjflksdjfldsjflsdjflkdsjlfdsjlfds');
+          console.log('error');
           res.status(500).json({result:false, error:err});
-      }    
+      }
       });
       res.status(200).json({result:true, confirmation_token:confirmation_token, msg:'확인되었습니다. 이메일을 확인해주세요.'});
     }else{
