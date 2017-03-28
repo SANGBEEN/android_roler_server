@@ -150,21 +150,18 @@ router.get('/check', function(req, res, next){
   rndstr.setType(0);
   rndstr.setStr(16);
   var confirmation_token= rndstr.getStr();
+  console.log(confirmation_token);
   db.query('select * from user where name=? and email=?', [req.query.name, req.query.email],function(err,cursor){
     if (err){
       res.status(500).json({result:false, error:err});
     }
     if(cursor.length>0){
-      try{
         var myMsg = new Email(
           { from: "cordorshs@gmail.com"
           , to:   req.query.email
           , subject: "롤러 비밀번호 변경"
           , body: confirmation_token
         });
-      }catch(e){
-        console.log('failed');
-      }
       myMsg.send(function(err){
         if(err){
           console.log('error');
