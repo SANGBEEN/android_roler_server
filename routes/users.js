@@ -187,7 +187,7 @@ router.get('/check', function(req, res, next){
 router.post('/change', function(req, res, next){
   var hash = crypto.createHash('sha256').update(req.body.password).digest('hex');
   db.query('update user set password=? where email=?', [hash, req.body.email], function(err,cursor){
-    if(err) res.status(500).json({result:fasle, error:err});
+    if(err) res.status(500).json({result:false, error:err});
     res.status(200).json({result:true, msg:'비밀번호를 변경했습니다. 다시 로그인해주세요.'});
   });
 });
