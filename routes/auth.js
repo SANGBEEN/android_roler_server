@@ -5,7 +5,7 @@ var compose = require('composable-middleware');
 //var express = require('express');
 //var router = express.Router();
 var SECRET = token_config.secret;
-var EXPIRES = "1h";
+var EXPIRES = "5m";
 /*  TODO
     리프레시 토큰있는지 확인한 후 있으면 있으면 액세스 토큰 발행, 없으면 리프레시 토큰 발행 후 액세스 토큰 발행
     토큰이 만료되었을경우 리프레시 토큰을 이용해 액세스 토큰 발행
@@ -26,17 +26,22 @@ function isAuthenticated() {
       .use(function(req, res, next) {
         var token = req.headers['access_token'];
         if(token){
-          var decoded = jwt.verify(token, SECRET, function(err,decoded){
-            if ( err ) {
-                return res.status(403).send({ result : false, message : '토큰 인증 실패.'});
-            } else {
+          var decoded = jwt.verify(token, SECRET,function(err,decoded){
+            if (err.message=='invalid algorithm') {
+              return res.status(403).json({ result : false, message : 'invalid token'});
+            }else if(err.message=='jwt expired'){
+              console.log(decoded);
+              return res.status(403).json({ result : false, message : 'jwt expired'});
+            }else if(err){
+                return res.status(403).json({ result : false, error:err});
+            }else {
                 console.log('token verify');
                 req.user = decoded;
                 next();
             }
         });
       }else{
-        return res.status(403).send({success : false, message : '인증 토큰이 없습니다.'});
+        return res.status(403).json({success : false, message : '인증 토큰이 없습니다.'});
       }
     })
       // Attach user to request
@@ -122,6 +127,6 @@ function isAuthenticated() {
 //       })
 // }
 
-exports.signToken = signToken;
+exports.signAccessToken = signAccessToken;
 exports.isAuthenticated = isAuthenticated;
 //module.exports = router;
