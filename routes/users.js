@@ -92,7 +92,7 @@ router.post('/signin', function(req, res, next){
         }else{
           imageUrl='http://52.78.65.255:3000/sign/upload/'+req.body.email;
         }
-        var token = auth.signToken(cursor[0].id, cursor[0].email);
+        var token = auth.signAccessToken(cursor[0].id, cursor[0].email);
         res.status(200).json({result : true, name : cursor[0].name, email :req.body.email, id: cursor[0].id, imageUrl:imageUrl, access_token:token});
       }
       else{
@@ -189,6 +189,17 @@ router.post('/change', function(req, res, next){
   db.query('update user set password=? where email=?', [hash, req.body.email], function(err,cursor){
     if(err) res.status(500).json({result:false, error:err});
     res.status(200).json({result:true, msg:'비밀번호를 변경했습니다. 다시 로그인해주세요.'});
+  });
+});
+router.post('/refresh', function(req, res, next){
+  db.query('select * from user where id = ? and email =?', [req.body.id, req.body.email],function(error,cursor){
+    if(error) res.status(500).json({result:false, error:error})
+    if(cursor.length>0){
+      var token = auth.signAccessToken(cursor[0].id, cursor[0].email);
+      res.status(200).json({result:true, access_token:token});
+    }else{
+      res.status(200).json({result:false, msg:"no content"})
+    }
   });
 });
 
