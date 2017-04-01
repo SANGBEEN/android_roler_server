@@ -137,6 +137,17 @@ router.get('/send', function(req, res, next){
     res.status(200).json({result:true});
   });
 });
+router.post('/refresh', function(req, res, next){
+  db.query('select * from user where id = ? and email =?', [req.body.id, req.body.email],function(error,cursor){
+    if(error) res.status(500).json({result:false, error:error})
+    if(cursor.length>0){
+      var token = auth.signAccessToken(cursor[0].id, cursor[0].email);
+      res.status(200).json({result:true, access_token:token});
+    }else{
+      res.status(200).json({result:false, msg:"no content"})
+    }
+  });
+});
 
 
 module.exports = router;

@@ -5,7 +5,7 @@ var compose = require('composable-middleware');
 //var express = require('express');
 //var router = express.Router();
 var SECRET = token_config.secret;
-var EXPIRES = "5m";
+var EXPIRES = "30m";
 /*  TODO
     리프레시 토큰있는지 확인한 후 있으면 있으면 액세스 토큰 발행, 없으면 리프레시 토큰 발행 후 액세스 토큰 발행
     토큰이 만료되었을경우 리프레시 토큰을 이용해 액세스 토큰 발행
@@ -129,4 +129,3 @@ function isAuthenticated() {
 
 exports.signAccessToken = signAccessToken;
 exports.isAuthenticated = isAuthenticated;
-//module.exports = router;
