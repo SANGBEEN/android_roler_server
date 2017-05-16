@@ -40,6 +40,7 @@ app.use('/role', role);
 app.use('/schedule',schedule);
 app.use('/todo', todo);
 app.use('/fcm', fcm);
+app.use('/swagger-ui', express.static(path.join(__dirname, './node_modules/swagger-ui/dist')));
 //app.use('/auth', auth);
 
 // catch 404 and forward to error handler

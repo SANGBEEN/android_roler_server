@@ -96,7 +96,7 @@ router.post('/signin', function(req, res, next){
         res.status(200).json({result : true, name : cursor[0].name, email :req.body.email, id: cursor[0].id, imageUrl:imageUrl, access_token:token});
       }
       else{
-        res.status(200).json({result : false});
+        res.status(200).json({result : false, message:"아이디가 없거나 비밀번호가 틀림"});
       }
     }
   });

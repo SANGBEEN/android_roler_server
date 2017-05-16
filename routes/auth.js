@@ -27,7 +27,8 @@ function isAuthenticated() {
         var token = req.headers['access_token'];
         if(token){
           var decoded = jwt.verify(token, SECRET,function(err,decoded){
-            if (err.message=='invalid algorithm') {
+            console.log(err)
+            if (err.message=='invalid token') {
               return res.status(403).json({ result : false, message : 'invalid token'});
             }else if(err.message=='jwt expired'){
               console.log(decoded);
