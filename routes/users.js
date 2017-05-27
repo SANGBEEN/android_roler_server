@@ -102,8 +102,8 @@ router.post('/signin', function(req, res, next){
   });
 });
 
-router.get('/upload',auth.isAuthenticated(), function(req,res,next){
-    var email = req.user.email;
+router.get('/upload/:email',auth.isAuthenticated(), function(req,res,next){
+    var email = req.params.email;
     console.log(email);
     var filename;
     db.query('select * from user where email=?',[email],function(error,cursor){
