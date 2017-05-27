@@ -102,11 +102,11 @@ router.post('/signin', function(req, res, next){
   });
 });
 
-router.get('/upload/:email', function(req,res,next){
-    var email = req.params.email;
+router.get('/upload',auth.isAuthenticated(), function(req,res,next){
+    var email = req.user.email;
     console.log(email);
     var filename;
-    db.query('select * from user where email=?',[req.params.email],function(error,cursor){
+    db.query('select * from user where email=?',[email],function(error,cursor){
       if(error){
         res.status(500).json({error:error});
       }
@@ -191,8 +191,8 @@ router.post('/change', function(req, res, next){
     res.status(200).json({result:true, msg:'비밀번호를 변경했습니다. 다시 로그인해주세요.'});
   });
 });
-router.post('/refresh', function(req, res, next){
-  db.query('select * from user where id = ? and email =?', [req.body.id, req.body.email],function(error,cursor){
+router.post('/refresh', auth.isAuthenticated(), function(req, res, next){
+  db.query('select * from user where id = ? and email =?', [req.user.id, req.user.email],function(error,cursor){
     if(error) res.status(500).json({result:false, error:error})
     if(cursor.length>0){
       var token = auth.signAccessToken(cursor[0].id, cursor[0].email);
