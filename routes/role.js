@@ -77,12 +77,17 @@ router.put('/progress', auth.isAuthenticated(), function(req, res, next){
     function(cursor, cb){
       var count=0;
       var progress;
-      for(var i=0;i<cursor.length;i++){
-        if(cursor[i].isDone=="true"){
-          count++;
+      if(cursor.length>0){
+        for(var i=0;i<cursor.length;i++){
+          if(cursor[i].isDone=="true"){
+            count++;
+          }
         }
+        progress = Math.round(count/cursor.length*100);
+      }else{
+        progress = 0;
       }
-      progress = Math.round(count/cursor.length*100);
+
       console.log(progress);
       cb(null, progress);
     }
