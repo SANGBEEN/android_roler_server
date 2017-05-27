@@ -28,17 +28,17 @@ function isAuthenticated() {
         if(token){
           var decoded = jwt.verify(token, SECRET,function(err,decoded){
             console.log(err)
-            if (err.message=='invalid token') {
+            if(err==null){
+              console.log('token verify');
+              req.user = decoded;
+              next();
+            }else if (err.message=='invalid token') {
               return res.status(403).json({ result : false, message : 'invalid token'});
             }else if(err.message=='jwt expired'){
               console.log(decoded);
               return res.status(403).json({ result : false, message : 'jwt expired'});
             }else if(err){
                 return res.status(403).json({ result : false, error:err});
-            }else {
-                console.log('token verify');
-                req.user = decoded;
-                next();
             }
         });
       }else{
