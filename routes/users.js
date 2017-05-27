@@ -90,7 +90,7 @@ router.post('/signin', function(req, res, next){
         if(cursor[0].picture_id==null){
           imageUrl="";
         }else{
-          imageUrl='http://52.78.65.255:3000/sign/upload/'+req.body.email;
+          imageUrl='http://52.78.65.255:3000/users/upload/'+req.body.email;
         }
         var token = auth.signAccessToken(cursor[0].id, cursor[0].email);
         res.status(200).json({result : true, name : cursor[0].name, email :req.body.email, id: cursor[0].id, imageUrl:imageUrl, access_token:token});
