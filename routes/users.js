@@ -37,7 +37,7 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage })
 router.post('/upload', auth.isAuthenticated(), upload.single('myfile'), function(req,res,next){
   if(req.file){
-    var imageUrl='http://52.78.65.255:3000/sign/upload/'+req.user.email;
+    var imageUrl='http://52.78.65.255:3000/users/upload/'+req.user.email;
     db.query('UPDATE user SET picture_id = ? where email= ?',[req.file.originalname, req.user.email],function(error,cursor){
       if(error){
         res.status(500).json({result : error});
