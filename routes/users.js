@@ -102,7 +102,7 @@ router.post('/signin', function(req, res, next){
   });
 });
 
-router.get('/upload/:email',auth.isAuthenticated(), function(req,res,next){
+router.get('/upload/:email', function(req,res,next){
     var email = req.params.email;
     console.log(email);
     var filename;
