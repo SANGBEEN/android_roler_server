@@ -16,6 +16,8 @@ var server = email.server.connect({
     port: 465,
     ssl: true
 });
+var SECRET = token_config.secret;
+var jwt = require('jsonwebtoken');
 /*
 var upload = multer({
   dest: path.join(__dirname, '../upload')
@@ -203,6 +205,26 @@ router.post('/refresh', auth.isAuthenticated(), function(req, res, next){
   });
 });
 
+router.get('/token_check',function(req,res,next){
+  var token = req.headers['access_token'];
+  if(token){
+    var decoded = jwt.verify(token, SECRET,function(err,decoded){
+      console.log(err)
+      if(err==null){
+        console.log('token verify');
+        res.status(200).json({result:true});
+
+      }else if (err.message=='invalid token') {
+        return res.status(403).json({ result : false, message : 'invalid token'});
+      }else if(err.message=='jwt expired'){
+        console.log(decoded);
+        return res.status(403).json({ result : false, message : 'jwt expired'});
+      }else if(err){
+          return res.status(403).json({ result : false, error:err});
+      }
+  });
+}
+});
 
 function RndStr() {
     this.str = '';
