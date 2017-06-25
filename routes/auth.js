@@ -5,7 +5,7 @@ var compose = require('composable-middleware');
 //var express = require('express');
 //var router = express.Router();
 var SECRET = token_config.secret;
-var EXPIRES = "3m";
+var EXPIRES = "30m";
 
 // access_token 토큰 생성 함수
 function signAccessToken(id,email) {

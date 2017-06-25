@@ -43,14 +43,21 @@ router.put('/update', auth.isAuthenticated(), function(req, res, next) {
 
 router.get('/read', auth.isAuthenticated(), function(req, res, next) {
   var result=[];
-  db.query('select * from schedule where user_id = ? and date = ? ;', [req.user.id, req.query.date], function(error, cursor){
+  var t_date = new Date(req.query.date);
+
+  var today     = t_date.getFullYear()+'-'+(t_date.getMonth()+1)+'-'+t_date.getDate();
+  var yesterday = t_date.getFullYear()+'-'+(t_date.getMonth()+1)+'-'+(t_date.getDate()-1);
+  var tomorrow  = t_date.getFullYear()+'-'+(t_date.getMonth()+1)+'-'+(t_date.getDate()+1);
+
+  db.query('select * from schedule where user_id = ? and date in(?,?,?) order by date', [req.user.id, yesterday, today , tomorrow], function(error, cursor){
     if (error){
       res.status(500).json({result : error});
     }
     else {
       if (cursor.length > 0){
         for(var i=0;i<cursor.length;i++){
-          result.push({id:cursor[i].id, content:cursor[i].content, startTime:cursor[i].startTime, endTime:cursor[i].endTime, date:cursor[i].date, user_id:cursor[i].user_id});
+          console.log(cursor[i].date);
+          result.push({id:cursor[i].id, content:cursor[i].content, startTime:cursor[i].startTime, endTime:cursor[i].endTime, date:cursor[i].date, user_id:cursor[i].user_id });
         }
         res.status(200).json({result : true, params:result});
       }else{
